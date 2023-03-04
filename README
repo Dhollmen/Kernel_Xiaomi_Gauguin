@@ -1,19 +1,21 @@
-Linux kernel
-============
+Tuxafgmur - Dhollmen Xiaomi gauguin Kernel
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+Copyright and merits given to their respective authors.
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+------------------------------------------------------
 
-    https://www.kernel.org/doc/html/latest/
+Kernel for the Redmi Note 9 Pro 5G / Mi 10T Lite / Mi 10i 
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
-See Documentation/00-INDEX for a list of what is contained in each file.
+Codename = gauguin
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+Smartphone from Xiaomi announced in December 2020.
+
+Device specifications:
+
+	SoC 	Qualcomm SM7225 Snapdragon 750G 5G
+	CPU 	2x2.2 GHz Kryo 570 & 6x1.8 GHz Kryo 570
+	GPU 	Adreno 619
+	Memory 	6GB / 8GB
+	Storage 128GB / 256GB
+	Battery Li-Po 4820 mAh, non-removable
+	Display 1080 x 2400 pixels, 6.67 inches
