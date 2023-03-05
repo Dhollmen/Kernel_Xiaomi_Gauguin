@@ -465,30 +465,6 @@ static int bq2597x_enable_wdt(struct bq2597x *bq, bool enable)
 }
 EXPORT_SYMBOL_GPL(bq2597x_enable_wdt);
 
-static int bq2597x_set_wdt(struct bq2597x *bq, int ms)
-{
-	int ret;
-	u8 val;
-
-	if (ms == 500)
-		val = BQ2597X_WATCHDOG_0P5S;
-	else if (ms == 1000)
-		val = BQ2597X_WATCHDOG_1S;
-	else if (ms == 5000)
-		val = BQ2597X_WATCHDOG_5S;
-	else if (ms == 30000)
-		val = BQ2597X_WATCHDOG_30S;
-	else
-		val = BQ2597X_WATCHDOG_30S;
-
-	val <<= BQ2597X_WATCHDOG_SHIFT;
-
-	ret = bq2597x_update_bits(bq, BQ2597X_REG_0B,
-				BQ2597X_WATCHDOG_MASK, val);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(bq2597x_set_wdt);
-
 static int bq2597x_enable_batovp(struct bq2597x *bq, bool enable)
 {
 	int ret;
@@ -1097,23 +1073,6 @@ static int bq2597x_set_alarm_int_mask(struct bq2597x *bq, u8 mask)
 }
 EXPORT_SYMBOL_GPL(bq2597x_set_alarm_int_mask);
 
-static int bq2597x_clear_alarm_int_mask(struct bq2597x *bq, u8 mask)
-{
-	int ret;
-	u8 val;
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_0F, &val);
-	if (ret)
-		return ret;
-
-	val &= ~mask;
-
-	ret = bq2597x_write_byte(bq, BQ2597X_REG_0F, val);
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(bq2597x_clear_alarm_int_mask);
-
 static int bq2597x_set_fault_int_mask(struct bq2597x *bq, u8 mask)
 {
 	int ret;
@@ -1130,24 +1089,6 @@ static int bq2597x_set_fault_int_mask(struct bq2597x *bq, u8 mask)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(bq2597x_set_fault_int_mask);
-
-static int bq2597x_clear_fault_int_mask(struct bq2597x *bq, u8 mask)
-{
-	int ret;
-	u8 val;
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_12, &val);
-	if (ret)
-		return ret;
-
-	val &= ~mask;
-
-	ret = bq2597x_write_byte(bq, BQ2597X_REG_12, val);
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(bq2597x_clear_fault_int_mask);
-
 
 static int bq2597x_set_sense_resistor(struct bq2597x *bq, int r_mohm)
 {
@@ -1987,7 +1928,6 @@ static int bq2597x_charger_is_writeable(struct power_supply *psy,
 	return ret;
 }
 
-
 static int bq2597x_psy_register(struct bq2597x *bq)
 {
 	int ret;
@@ -2021,59 +1961,6 @@ static int bq2597x_psy_register(struct bq2597x *bq)
 
 	return 0;
 }
-
-static void bq2597x_dump_reg(struct bq2597x *bq)
-{
-
-	int ret;
-	u8 val;
-	u8 addr;
-
-	for (addr = 0x00; addr <= 0x2B; addr++) {
-		ret = bq2597x_read_byte(bq, addr, &val);
-		if (!ret)
-			bq_err("Reg[%02X] = 0x%02X\n", addr, val);
-	}
-
-}
-EXPORT_SYMBOL_GPL(bq2597x_dump_reg);
-
-/*static void bq2597x_dump_important_regs(struct bq2597x *bq)
-{
-
-	int ret;
-	u8 val;
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_0A, &val);
-	if (!ret)
-		bq_err("dump converter state Reg [%02X] = 0x%02X\n",
-				BQ2597X_REG_0A, val);
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_0D, &val);
-	if (!ret)
-		bq_err("dump int stat Reg[%02X] = 0x%02X\n",
-				BQ2597X_REG_0D, val);
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_0E, &val);
-	if (!ret)
-		bq_err("dump int flag Reg[%02X] = 0x%02X\n",
-				BQ2597X_REG_0E, val);
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_10, &val);
-	if (!ret)
-		bq_err("dump fault stat Reg[%02X] = 0x%02X\n",
-				BQ2597X_REG_10, val);
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_11, &val);
-	if (!ret)
-		bq_err("dump fault flag Reg[%02X] = 0x%02X\n",
-				BQ2597X_REG_11, val);
-
-	ret = bq2597x_read_byte(bq, BQ2597X_REG_2D, &val);
-	if (!ret)
-		bq_err("dump regulation flag Reg[%02X] = 0x%02X\n",
-				BQ2597X_REG_2D, val);
-}*/
 
 static void bq2597x_check_alarm_status(struct bq2597x *bq)
 {
@@ -2110,7 +1997,6 @@ static void bq2597x_check_alarm_status(struct bq2597x *bq)
 		bq->vbus_present  = !!(stat & VBUS_INSERT);
 		bq->bat_ucp_alarm = !!(stat & BAT_UCP_ALARM);
 	}
-
 
 	ret = bq2597x_read_byte(bq, BQ2597X_REG_08, &stat);
 	if (!ret && (stat & 0x50))
@@ -2486,4 +2372,3 @@ module_i2c_driver(bq2597x_charger_driver);
 MODULE_DESCRIPTION("TI BQ2597x Charger Driver");
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Texas Instruments");
-
